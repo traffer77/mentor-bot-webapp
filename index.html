@@ -102,17 +102,18 @@
         let tg = window.Telegram.WebApp;
         tg.expand(); tg.ready();
 
-        const ADMIN_ID = 1067353940; 
-        let userId = tg.initDataUnsafe?.user?.id || 0;
-
         const urlParams = new URLSearchParams(window.location.search);
         let mentors = [];
+        // Читаем роль, которую передал Python-бот (по умолчанию student)
+        let userRole = urlParams.get('role') || 'student'; 
+        
         try {
             let mParam = urlParams.get('data');
             if (mParam) mentors = JSON.parse(decodeURIComponent(mParam));
         } catch(e) { console.error("Ошибка парсинга:", e); }
 
-        if (userId === ADMIN_ID) {
+        // Если бот сказал, что это админ - показываем админку
+        if (userRole === 'admin') {
             document.getElementById('admin-view').style.display = 'block';
             renderAdminList();
         } else {
