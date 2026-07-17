@@ -6,159 +6,44 @@
     <title>Меню Бота</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Основные стили и переменные Telegram */
         body {
             background-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
             color: var(--tg-theme-text-color, #000000);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 16px;
-            -webkit-font-smoothing: antialiased;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0; padding: 16px; -webkit-font-smoothing: antialiased;
         }
-
-        h3 {
-            margin-top: 0;
-            margin-bottom: 16px;
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        p.subtitle {
-            color: var(--tg-theme-hint-color, #8e8e93);
-            font-size: 14px;
-            line-height: 1.4;
-            margin-bottom: 20px;
-        }
-
-        /* Контейнеры-карточки */
-        .card {
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            margin-bottom: 16px;
-        }
-
-        /* Навигация (Табы) */
-        .tabs-nav {
-            display: flex;
-            background: var(--tg-theme-bg-color, #ffffff);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-        }
-        .tabs-nav button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            background: transparent;
-            color: var(--tg-theme-hint-color, #8e8e93);
-            transition: all 0.2s ease;
-        }
-        .tabs-nav button.active {
-            background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            box-shadow: 0 2px 6px rgba(51, 144, 236, 0.3);
-        }
-
-        /* Анимация переключения вкладок */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Поля ввода */
-        input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(0,0,0,0.1);
-            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
-            color: var(--tg-theme-text-color, #000);
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        input:focus {
-            border-color: var(--tg-theme-button-color, #3390ec);
-            background: var(--tg-theme-bg-color, #ffffff);
-        }
-
-        /* Кнопки */
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: none;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            transition: transform 0.1s, opacity 0.2s;
-        }
-        .btn:active {
-            transform: scale(0.97);
-            opacity: 0.9;
-        }
-        .btn-danger {
-            background: #ff3b30;
-            color: #ffffff;
-        }
-
-        /* Списки и элементы */
-        .mentor-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #eee);
-        }
-        .mentor-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-        .mentor-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .mentor-info b {
-            font-size: 16px;
-        }
-        .mentor-info small {
-            color: var(--tg-theme-hint-color, #8e8e93);
-            font-size: 13px;
-        }
+        h3 { margin-top: 0; margin-bottom: 16px; font-size: 20px; font-weight: 600; }
+        p.subtitle { color: var(--tg-theme-hint-color, #8e8e93); font-size: 14px; margin-bottom: 16px; }
         
-        /* Карточка для ученика */
-        .student-mentor-card {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            text-align: center;
-        }
-        .student-mentor-card b {
-            font-size: 18px;
-        }
-        .emoji-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
+        .card { background-color: var(--tg-theme-bg-color, #ffffff); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        
+        .tabs-nav { display: flex; background: var(--tg-theme-bg-color, #ffffff); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+        .tabs-nav button { flex: 1; padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 500; background: transparent; color: var(--tg-theme-hint-color, #8e8e93); transition: 0.2s; }
+        .tabs-nav button.active { background: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #ffffff); }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        input { width: 100%; box-sizing: border-box; padding: 14px 16px; margin-bottom: 12px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--tg-theme-secondary-bg-color, #f4f4f5); color: var(--tg-theme-text-color, #000); font-size: 16px; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--tg-theme-button-color, #3390ec); background: var(--tg-theme-bg-color, #ffffff); }
+        
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #ffffff); transition: 0.2s; }
+        .btn:active { transform: scale(0.97); opacity: 0.9; }
+        .btn-danger { background: #ff3b30; color: #ffffff; }
+        .btn-secondary { background: var(--tg-theme-secondary-bg-color, #eee); color: var(--tg-theme-text-color); }
+
+        .mentor-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #eee); }
+        .mentor-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .mentor-info { display: flex; flex-direction: column; gap: 4px; }
+        .mentor-actions { display: flex; gap: 8px; }
+        
+        .student-mentor-card { display: flex; flex-direction: column; gap: 12px; text-align: center; }
+
+        /* Стили для модального окна (Редактирование) */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
+        .modal { background: var(--tg-theme-bg-color, #fff); padding: 20px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -173,10 +58,10 @@
         <div id="tab-add" class="tab-content active">
             <div class="card">
                 <h3>Новый Хелпер</h3>
-                <input type="number" id="mId" placeholder="ID (например, 123456789)">
+                <input type="text" id="mId" placeholder="ID (например, 123456789)">
                 <input type="text" id="mName" placeholder="Имя Хелпера">
-                <input type="url" id="mLink" placeholder="Ссылка на группу (https://...)">
-                <button class="btn" style="margin-top: 8px;" onclick="addMentor()">Сохранить Хелпера</button>
+                <input type="url" id="mLink" placeholder="Ссылка (https:// или t.me/)">
+                <button id="btnAdd" class="btn" onclick="addMentor()">Сохранить Хелпера</button>
             </div>
         </div>
         
@@ -188,17 +73,34 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ (АДМИН) -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal">
+            <h3>Редактировать</h3>
+            <input type="hidden" id="editId">
+            <input type="text" id="editName" placeholder="Новое имя">
+            <input type="url" id="editLink" placeholder="Новая ссылка">
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn btn-secondary" onclick="closeEditModal()">Отмена</button>
+                <button id="btnSaveEdit" class="btn" onclick="saveEditMentor()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ПАНЕЛЬ УЧЕНИКА -->
     <div id="user-view" style="display: none;">
         <h3>Выбор Хелпера</h3>
         <p class="subtitle">Ознакомьтесь со списком доступных наставников и выберите того, за кем хотите закрепиться.</p>
+        
+        <!-- Живой поиск -->
+        <input type="text" id="searchInput" placeholder="🔍 Поиск по имени..." oninput="filterUserList()">
+        
         <div id="user-mentor-list"></div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+        tg.expand(); tg.ready();
 
         const ADMIN_ID = 1067353940; 
         let userId = tg.initDataUnsafe?.user?.id || 0;
@@ -215,25 +117,34 @@
             renderAdminList();
         } else {
             document.getElementById('user-view').style.display = 'block';
-            renderUserList();
+            renderUserList(mentors);
         }
 
-        // --- ЛОГИКА ИНТЕРФЕЙСА ---
+        // --- ВАЛИДАЦИЯ URL ---
+        function isValidUrl(string) {
+            return /^(https?:\/\/|t\.me\/)/i.test(string.trim());
+        }
+
+        // --- АНИМАЦИЯ КНОПКИ ---
+        function setLoading(btnId, text) {
+            let btn = document.getElementById(btnId);
+            btn.innerText = text;
+            btn.style.opacity = '0.7';
+            btn.style.pointerEvents = 'none';
+        }
+
+        // --- ИНТЕРФЕЙС АДМИНА ---
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tabs-nav button').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.add('active');
             document.getElementById('btn-' + tab).classList.add('active');
-            
-            // Легкая вибрация при переключении табов
             tg.HapticFeedback.selectionChanged();
         }
 
         function renderAdminList() {
             let html = '';
-            if (mentors.length === 0) {
-                html = "<p style='color: gray; text-align: center; padding: 10px 0;'>Список пока пуст</p>";
-            }
+            if (mentors.length === 0) html = "<p style='color: gray; text-align: center;'>Список пуст</p>";
             mentors.forEach(m => {
                 html += `
                 <div class="mentor-item">
@@ -241,54 +152,87 @@
                         <b>👨‍🏫 ${m.name}</b>
                         <small>ID: ${m.id}</small>
                     </div>
-                    <button class="btn btn-danger" style="width: auto; padding: 8px 16px; font-size: 14px; border-radius: 8px;" onclick="deleteMentor('${m.id}')">Удалить</button>
+                    <div class="mentor-actions">
+                        <button class="btn btn-secondary" style="padding: 8px; width: 40px;" onclick="openEditModal('${m.id}', '${m.name}', '${m.link}')">✏️</button>
+                        <button class="btn btn-danger" style="padding: 8px; width: 40px;" onclick="deleteMentor('${m.id}')">🗑</button>
+                    </div>
                 </div>`;
             });
             document.getElementById('admin-mentor-list').innerHTML = html;
         }
 
-        function renderUserList() {
-            let html = '';
-            if (mentors.length === 0) {
-                html = "<div class='card'><p style='text-align: center;'>Пока нет доступных хелперов 😔</p></div>";
-            }
-            mentors.forEach(m => {
-                html += `
-                <div class="card student-mentor-card">
-                    <div class="emoji-icon">🎓</div>
-                    <b>${m.name}</b>
-                    <button class="btn" onclick="selectMentor('${m.id}')">Выбрать наставника</button>
-                </div>`;
-            });
-            document.getElementById('user-mentor-list').innerHTML = html;
+        // --- ЛОГИКА РЕДАКТИРОВАНИЯ ---
+        function openEditModal(id, name, link) {
+            tg.HapticFeedback.impactOccurred('light');
+            document.getElementById('editId').value = id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editLink').value = link;
+            document.getElementById('edit-modal').classList.add('active');
         }
 
-        // --- ОТПРАВКА ДАННЫХ В БОТА ---
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+        }
+
+        function saveEditMentor() {
+            let id = document.getElementById('editId').value;
+            let name = document.getElementById('editName').value.trim();
+            let link = document.getElementById('editLink').value.trim();
+
+            if(!name || !link) return tg.showAlert("Заполните все поля!");
+            if(!isValidUrl(link)) return tg.showAlert("Ссылка должна начинаться с https:// или t.me/");
+
+            tg.HapticFeedback.notificationOccurred('success');
+            setLoading('btnSaveEdit', 'Сохраняем...');
+            tg.sendData(JSON.stringify({action: "edit", id: id, name: name, link: link}));
+        }
+
         function addMentor() {
             let id = document.getElementById('mId').value.trim();
             let name = document.getElementById('mName').value.trim();
             let link = document.getElementById('mLink').value.trim();
             
-            if(!id || !name || !link) {
-                tg.HapticFeedback.notificationOccurred('error');
-                return tg.showAlert("Пожалуйста, заполните все поля перед сохранением!");
-            }
+            if(!id || !name || !link) return tg.showAlert("Пожалуйста, заполните все поля!");
+            if(!isValidUrl(link)) return tg.showAlert("Ссылка должна начинаться с https:// или t.me/");
             
             tg.HapticFeedback.notificationOccurred('success');
+            setLoading('btnAdd', 'Добавляем...');
             tg.sendData(JSON.stringify({action: "add", id: id, name: name, link: link}));
         }
 
         function deleteMentor(id) {
             tg.HapticFeedback.impactOccurred('medium');
-            tg.showConfirm("Вы уверены, что хотите безвозвратно удалить этого Хелпера?", (confirm) => {
-                if(confirm) {
-                    tg.sendData(JSON.stringify({action: "delete", id: id}));
-                }
+            tg.showConfirm("Удалить Хелпера безвозвратно?", (confirm) => {
+                if(confirm) tg.sendData(JSON.stringify({action: "delete", id: id}));
             });
+        }
+
+        // --- ИНТЕРФЕЙС УЧЕНИКА (ПОИСК) ---
+        function renderUserList(list) {
+            let html = '';
+            if (list.length === 0) {
+                html = "<div class='card'><p style='text-align: center;'>Хелперы не найдены 😔</p></div>";
+            }
+            list.forEach(m => {
+                html += `
+                <div class="card student-mentor-card">
+                    <div style="font-size: 24px; margin-bottom: -4px;">🎓</div>
+                    <b>${m.name}</b>
+                    <button id="btnSelect_${m.id}" class="btn" onclick="selectMentor('${m.id}')">Выбрать наставника</button>
+                </div>`;
+            });
+            document.getElementById('user-mentor-list').innerHTML = html;
+        }
+
+        function filterUserList() {
+            let query = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = mentors.filter(m => m.name.toLowerCase().includes(query));
+            renderUserList(filtered);
         }
 
         function selectMentor(id) {
             tg.HapticFeedback.impactOccurred('heavy');
+            setLoading(`btnSelect_${id}`, 'Подключение...');
             tg.sendData(JSON.stringify({action: "select", id: id}));
         }
     </script>
