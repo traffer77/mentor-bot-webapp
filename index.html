@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ Панель</title>
+    <!-- Подключаем скрипт Telegram Web App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            /* Используем переменные цветов самого Telegram */
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            font-family: sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, button {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
+            background-color: var(--tg-theme-secondary-bg-color, #f4f4f4);
+            color: var(--tg-theme-text-color, #000);
+            font-size: 16px;
+        }
+        button {
+            background-color: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Добавить Хелпера</h2>
+    <input type="text" id="mentorId" placeholder="ID Хелпера (например, 123456789)">
+    <input type="text" id="mentorName" placeholder="Имя Хелпера">
+    <input type="text" id="mentorLink" placeholder="Ссылка на группу">
+    
+    <button onclick="sendDataToBot()">Добавить</button>
+
+    <script>
+        // Инициализируем Web App
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Открываем на весь экран
+
+        function sendDataToBot() {
+            let id = document.getElementById("mentorId").value;
+            let name = document.getElementById("mentorName").value;
+            let link = document.getElementById("mentorLink").value;
+
+            if (!id || !name || !link) {
+                tg.showAlert("Заполните все поля!");
+                return;
+            }
+
+            // Формируем JSON с данными
+            let data = {
+                action: "add_mentor",
+                mentor_id: id,
+                mentor_name: name,
+                mentor_link: link
+            };
+
+            // Отправляем данные обратно в aiogram и закрываем Web App
+            tg.sendData(JSON.stringify(data));
+        }
+    </script>
+</body>
+</html>
