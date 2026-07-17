@@ -10,32 +10,27 @@
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; 
-            padding: 0; 
-            -webkit-font-smoothing: antialiased;
+            margin: 0; padding: 0; -webkit-font-smoothing: antialiased;
         }
         
-        /* Общие отступы для контента */
         .container { padding: 16px; }
-
         h3 { margin-top: 0; margin-bottom: 8px; font-size: 22px; font-weight: 700; }
         p.subtitle { color: var(--tg-theme-hint-color, #8e8e93); font-size: 14px; margin-bottom: 16px; line-height: 1.4; }
         
         /* Табы для админа */
         .tabs-nav { display: flex; background: var(--tg-theme-secondary-bg-color, #f4f4f5); border-radius: 10px; padding: 3px; margin-bottom: 20px; }
-        .tabs-nav button { flex: 1; padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; background: transparent; color: var(--tg-theme-hint-color, #8e8e93); transition: 0.2s; }
+        .tabs-nav button { flex: 1; padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; background: transparent; color: var(--tg-theme-hint-color, #8e8e93); transition: 0.2s; white-space: nowrap;}
         .tabs-nav button.active { background: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Поля ввода и поиск */
-        .input-group { position: relative; margin-bottom: 16px; }
+        /* Поля ввода */
+        .input-group { margin-bottom: 12px; }
         input { width: 100%; box-sizing: border-box; padding: 12px 16px; border-radius: 12px; border: none; background: var(--tg-theme-secondary-bg-color, #f4f4f5); color: var(--tg-theme-text-color, #000); font-size: 16px; outline: none; transition: 0.2s; }
         input:focus { box-shadow: 0 0 0 2px var(--tg-theme-button-color, #3390ec) inset; }
         
-        /* Кнопка очистки поиска */
         .clear-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; background: var(--tg-theme-hint-color, #8e8e93); color: var(--tg-theme-bg-color, #fff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; opacity: 0; pointer-events: none; transition: 0.2s; }
         .clear-btn.visible { opacity: 1; pointer-events: auto; }
 
@@ -44,26 +39,23 @@
         .btn:active { transform: scale(0.97); opacity: 0.9; }
         .btn-small { width: auto; padding: 8px 16px; font-size: 14px; border-radius: 18px; }
         .btn-danger { background: #ff3b30; color: #ffffff; }
-        .btn-secondary { background: var(--tg-theme-secondary-bg-color, #eee); color: var(--tg-theme-text-color); }
+        .btn-secondary { background: var(--tg-theme-secondary-bg-color, #f4f4f5); color: var(--tg-theme-text-color); border: 1px solid #e5e5ea; }
         .btn-icon { padding: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 18px; }
 
-        /* Компактный список (как чаты в Telegram) */
+        /* Компактный список */
         .list-container { margin-top: 8px; padding-bottom: 20px; }
         .list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; transition: background 0.2s; }
         .list-item:active { background: var(--tg-theme-secondary-bg-color, #f4f4f5); }
-        
         .item-info { display: flex; align-items: center; gap: 12px; overflow: hidden; }
         
-        /* Динамические аватарки */
-        .avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 600; flex-shrink: 0; }
+        .avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 600; flex-shrink: 0; object-fit: cover; }
         
         .item-text { display: flex; flex-direction: column; overflow: hidden; }
         .item-text b { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .item-text small { color: var(--tg-theme-hint-color, #8e8e93); font-size: 13px; margin-top: 2px; }
-
         .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-        /* Залипающая шапка для учеников */
+        /* Шапка */
         .sticky-header { position: sticky; top: 0; background: var(--tg-theme-bg-color, #ffffff); z-index: 10; padding: 16px 16px 8px 16px; border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #f4f4f5); }
         .stats-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--tg-theme-hint-color, #8e8e93); font-weight: 500; margin-bottom: 4px; padding: 0 16px; }
 
@@ -78,24 +70,33 @@
 
     <!-- ПАНЕЛЬ АДМИНА -->
     <div id="admin-view" style="display: none;">
-        <div class="container">
+        <div class="container" style="padding-bottom: 0;">
             <div class="tabs-nav">
-                <button id="btn-add" class="active" onclick="switchTab('add')">Новый Хелпер</button>
-                <button id="btn-list" onclick="switchTab('list')">Управление</button>
+                <button id="btn-add" class="active" onclick="switchTab('add')">➕ Добавить</button>
+                <button id="btn-list" onclick="switchTab('list')">⚙️ Управление</button>
+                <button id="btn-tools" onclick="switchTab('tools')">🛠 Функции</button>
             </div>
             
             <div id="tab-add" class="tab-content active">
-                <h3>Добавление</h3>
-                <div class="input-group">
-                    <input type="text" id="mId" placeholder="Telegram ID">
-                </div>
-                <div class="input-group">
-                    <input type="text" id="mName" placeholder="Имя Хелпера">
-                </div>
-                <div class="input-group">
-                    <input type="url" id="mLink" placeholder="Ссылка (https:// или t.me/)">
-                </div>
+                <h3>Новый Хелпер</h3>
+                <div class="input-group"><input type="text" id="mId" placeholder="Telegram ID"></div>
+                <div class="input-group"><input type="text" id="mName" placeholder="Имя Хелпера"></div>
+                <div class="input-group"><input type="url" id="mLink" placeholder="Ссылка (https:// или t.me/)"></div>
+                <div class="input-group"><input type="url" id="mAvatar" placeholder="Ссылка на фото (необязательно)"></div>
                 <button id="btnAdd" class="btn" onclick="addMentor()" style="margin-top: 10px;">Сохранить</button>
+            </div>
+
+            <!-- ВКЛАДКА ФУНКЦИИ -->
+            <div id="tab-tools" class="tab-content">
+                <h3>Дополнительно</h3>
+                <p class="subtitle">Управление проектом и базой данных</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="sendAction('invite')">🔗 Создать инвайт-ссылку</button>
+                    <button class="btn btn-secondary" onclick="sendAction('stats')">📈 Статистика</button>
+                    <button class="btn btn-secondary" onclick="sendAction('backup')">📦 Скачать базу</button>
+                    <button class="btn btn-secondary" onclick="sendAction('broadcast')">📢 Массовая рассылка</button>
+                </div>
             </div>
         </div>
         
@@ -113,17 +114,12 @@
         <div class="modal">
             <h3 style="margin-bottom: 20px;">Редактировать</h3>
             <input type="hidden" id="editOldId">
-            <div class="input-group">
-                <input type="text" id="editNewId" placeholder="Новый Telegram ID">
-            </div>
-            <div class="input-group">
-                <input type="text" id="editName" placeholder="Новое имя">
-            </div>
-            <div class="input-group">
-                <input type="url" id="editLink" placeholder="Новая ссылка">
-            </div>
+            <div class="input-group"><input type="text" id="editNewId" placeholder="Новый Telegram ID"></div>
+            <div class="input-group"><input type="text" id="editName" placeholder="Новое имя"></div>
+            <div class="input-group"><input type="url" id="editLink" placeholder="Новая ссылка"></div>
+            <div class="input-group"><input type="url" id="editAvatar" placeholder="Ссылка на фото (необязательно)"></div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn btn-secondary" onclick="closeEditModal()">Отмена</button>
+                <button class="btn btn-secondary" style="border: none;" onclick="closeEditModal()">Отмена</button>
                 <button id="btnSaveEdit" class="btn" onclick="saveEditMentor()">Сохранить</button>
             </div>
         </div>
@@ -134,18 +130,15 @@
         <div class="sticky-header">
             <h3>Наставники</h3>
             <p class="subtitle">Выберите хелпера для начала работы.</p>
-            
-            <div class="input-group" style="margin-bottom: 0;">
+            <div class="input-group" style="margin-bottom: 0; position: relative;">
                 <input type="text" id="searchInput" placeholder="Поиск по имени..." oninput="filterUserList()">
                 <div id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✖</div>
             </div>
         </div>
         
         <div class="stats-row" style="margin-top: 12px;">
-            <span>ДОСТУПНЫЕ</span>
-            <span id="userCount">0</span>
+            <span>ДОСТУПНЫЕ</span><span id="userCount">0</span>
         </div>
-        
         <div id="user-mentor-list" class="list-container"></div>
     </div>
 
@@ -171,7 +164,6 @@
             renderUserList(mentors);
         }
 
-        // --- УТИЛИТЫ ---
         function isValidUrl(string) { return /^(https?:\/\/|t\.me\/)/i.test(string.trim()); }
         
         function setLoading(btnId, text) {
@@ -179,7 +171,6 @@
             btn.innerText = text; btn.style.opacity = '0.7'; btn.style.pointerEvents = 'none';
         }
 
-        // Генерация цвета для аватарки на основе имени
         function getAvatarColor(name) {
             const colors = ['#e56555', '#f28c48', '#8e85ee', '#549cdd', '#4cb382', '#6dc534', '#e17076'];
             let hash = 0;
@@ -187,12 +178,16 @@
             return colors[Math.abs(hash) % colors.length];
         }
 
-        // Получение первой буквы (поддержка эмодзи и спецсимволов)
-        function getInitial(name) {
-            return name ? Array.from(name.trim())[0].toUpperCase() : '?';
+        function getInitial(name) { return name ? Array.from(name.trim())[0].toUpperCase() : '?'; }
+
+        // Отрисовка аватарки (картинка или кружок)
+        function getAvatarHtml(name, avatarUrl) {
+            if (avatarUrl && isValidUrl(avatarUrl)) {
+                return `<img src="${avatarUrl}" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="avatar" style="display:none; background-color: ${getAvatarColor(name)}">${getInitial(name)}</div>`;
+            }
+            return `<div class="avatar" style="background-color: ${getAvatarColor(name)}">${getInitial(name)}</div>`;
         }
 
-        // --- ИНТЕРФЕЙС АДМИНА ---
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tabs-nav button').forEach(b => b.classList.remove('active'));
@@ -207,20 +202,15 @@
             if (mentors.length === 0) html = "<div style='text-align: center; color: gray; margin-top: 20px;'>Список пуст</div>";
             
             mentors.forEach(m => {
-                let color = getAvatarColor(m.name);
-                let initial = getInitial(m.name);
-                
+                let avatarHtml = getAvatarHtml(m.name, m.avatar);
                 html += `
                 <div class="list-item">
                     <div class="item-info">
-                        <div class="avatar" style="background-color: ${color}">${initial}</div>
-                        <div class="item-text">
-                            <b>${m.name}</b>
-                            <small>ID: ${m.id}</small>
-                        </div>
+                        ${avatarHtml}
+                        <div class="item-text"><b>${m.name}</b><small>ID: ${m.id}</small></div>
                     </div>
                     <div class="item-actions">
-                        <button class="btn btn-secondary btn-icon" onclick="openEditModal('${m.id}', '${m.name.replace(/'/g, "\\'")}', '${m.link}')">✏️</button>
+                        <button class="btn btn-secondary btn-icon" onclick="openEditModal('${m.id}', '${m.name.replace(/'/g, "\\'")}', '${m.link}', '${m.avatar || ''}')">✏️</button>
                         <button class="btn btn-danger btn-icon" onclick="deleteMentor('${m.id}')">🗑</button>
                     </div>
                 </div>`;
@@ -228,13 +218,13 @@
             document.getElementById('admin-mentor-list').innerHTML = html;
         }
 
-        // --- ЛОГИКА РЕДАКТИРОВАНИЯ ---
-        function openEditModal(id, name, link) {
+        function openEditModal(id, name, link, avatar) {
             tg.HapticFeedback.impactOccurred('light');
             document.getElementById('editOldId').value = id;
             document.getElementById('editNewId').value = id;
             document.getElementById('editName').value = name;
             document.getElementById('editLink').value = link;
+            document.getElementById('editAvatar').value = avatar !== 'undefined' ? avatar : '';
             document.getElementById('edit-modal').classList.add('active');
         }
 
@@ -245,26 +235,28 @@
             let newId = document.getElementById('editNewId').value.trim();
             let name = document.getElementById('editName').value.trim();
             let link = document.getElementById('editLink').value.trim();
+            let avatar = document.getElementById('editAvatar').value.trim();
 
-            if(!newId || !name || !link) return tg.showAlert("Заполните все поля!");
+            if(!newId || !name || !link) return tg.showAlert("Заполните основные поля!");
             if(!isValidUrl(link)) return tg.showAlert("Ссылка должна начинаться с https:// или t.me/");
 
             tg.HapticFeedback.notificationOccurred('success');
             setLoading('btnSaveEdit', 'Сохраняем...');
-            tg.sendData(JSON.stringify({ action: "edit", id: oldId, new_id: newId, name: name, link: link }));
+            tg.sendData(JSON.stringify({ action: "edit", id: oldId, new_id: newId, name: name, link: link, avatar: avatar }));
         }
 
         function addMentor() {
             let id = document.getElementById('mId').value.trim();
             let name = document.getElementById('mName').value.trim();
             let link = document.getElementById('mLink').value.trim();
+            let avatar = document.getElementById('mAvatar').value.trim();
             
-            if(!id || !name || !link) return tg.showAlert("Пожалуйста, заполните все поля!");
+            if(!id || !name || !link) return tg.showAlert("Пожалуйста, заполните все обязательные поля!");
             if(!isValidUrl(link)) return tg.showAlert("Ссылка должна начинаться с https:// или t.me/");
             
             tg.HapticFeedback.notificationOccurred('success');
             setLoading('btnAdd', 'Добавляем...');
-            tg.sendData(JSON.stringify({ action: "add", id: id, name: name, link: link }));
+            tg.sendData(JSON.stringify({ action: "add", id: id, name: name, link: link, avatar: avatar }));
         }
 
         function deleteMentor(id) {
@@ -274,24 +266,23 @@
             });
         }
 
-        // --- ИНТЕРФЕЙС УЧЕНИКА ---
+        // Отправка действий с вкладки "Функции"
+        function sendAction(act) {
+            tg.HapticFeedback.impactOccurred('medium');
+            tg.sendData(JSON.stringify({ action: act }));
+        }
+
         function renderUserList(list) {
             let html = '';
-            if (list.length === 0) {
-                html = "<div style='text-align: center; color: gray; margin-top: 30px;'>По вашему запросу ничего не найдено 😔</div>";
-            }
+            if (list.length === 0) html = "<div style='text-align: center; color: gray; margin-top: 30px;'>Ничего не найдено 😔</div>";
+            
             list.forEach(m => {
-                let color = getAvatarColor(m.name);
-                let initial = getInitial(m.name);
-
+                let avatarHtml = getAvatarHtml(m.name, m.avatar);
                 html += `
                 <div class="list-item">
                     <div class="item-info">
-                        <div class="avatar" style="background-color: ${color}">${initial}</div>
-                        <div class="item-text">
-                            <b>${m.name}</b>
-                            <small>Наставник Академии</small>
-                        </div>
+                        ${avatarHtml}
+                        <div class="item-text"><b>${m.name}</b><small>Наставник Академии</small></div>
                     </div>
                     <button id="btnSelect_${m.id}" class="btn btn-small" onclick="selectMentor('${m.id}')">Выбрать</button>
                 </div>`;
@@ -302,20 +293,13 @@
         function filterUserList() {
             let query = document.getElementById('searchInput').value.toLowerCase();
             let btnClear = document.getElementById('clearSearchBtn');
-            
-            if (query.length > 0) { btnClear.classList.add('visible'); } 
-            else { btnClear.classList.remove('visible'); }
-
+            if (query.length > 0) { btnClear.classList.add('visible'); } else { btnClear.classList.remove('visible'); }
             let filtered = mentors.filter(m => m.name.toLowerCase().includes(query));
             document.getElementById('userCount').innerText = filtered.length;
             renderUserList(filtered);
         }
 
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            filterUserList();
-            document.getElementById('searchInput').focus();
-        }
+        function clearSearch() { document.getElementById('searchInput').value = ''; filterUserList(); document.getElementById('searchInput').focus(); }
 
         function selectMentor(id) {
             tg.HapticFeedback.impactOccurred('heavy');
