@@ -77,7 +77,10 @@
     <div id="edit-modal" class="modal-overlay">
         <div class="modal">
             <h3>Редактировать</h3>
-            <input type="hidden" id="editId">
+            <!-- Скрытое поле для старого ID -->
+            <input type="hidden" id="editOldId">
+            <!-- Видимое поле для нового ID -->
+            <input type="text" id="editNewId" placeholder="Новый Telegram ID">
             <input type="text" id="editName" placeholder="Новое имя">
             <input type="url" id="editLink" placeholder="Новая ссылка">
             <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -104,7 +107,6 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         let mentors = [];
-        // Читаем роль, которую передал Python-бот (по умолчанию student)
         let userRole = urlParams.get('role') || 'student'; 
         
         try {
@@ -112,7 +114,6 @@
             if (mParam) mentors = JSON.parse(decodeURIComponent(mParam));
         } catch(e) { console.error("Ошибка парсинга:", e); }
 
-        // Если бот сказал, что это админ - показываем админку
         if (userRole === 'admin') {
             document.getElementById('admin-view').style.display = 'block';
             renderAdminList();
@@ -165,7 +166,8 @@
         // --- ЛОГИКА РЕДАКТИРОВАНИЯ ---
         function openEditModal(id, name, link) {
             tg.HapticFeedback.impactOccurred('light');
-            document.getElementById('editId').value = id;
+            document.getElementById('editOldId').value = id;
+            document.getElementById('editNewId').value = id;
             document.getElementById('editName').value = name;
             document.getElementById('editLink').value = link;
             document.getElementById('edit-modal').classList.add('active');
@@ -176,16 +178,24 @@
         }
 
         function saveEditMentor() {
-            let id = document.getElementById('editId').value;
+            let oldId = document.getElementById('editOldId').value;
+            let newId = document.getElementById('editNewId').value.trim();
             let name = document.getElementById('editName').value.trim();
             let link = document.getElementById('editLink').value.trim();
 
-            if(!name || !link) return tg.showAlert("Заполните все поля!");
+            if(!newId || !name || !link) return tg.showAlert("Заполните все поля!");
             if(!isValidUrl(link)) return tg.showAlert("Ссылка должна начинаться с https:// или t.me/");
 
             tg.HapticFeedback.notificationOccurred('success');
             setLoading('btnSaveEdit', 'Сохраняем...');
-            tg.sendData(JSON.stringify({action: "edit", id: id, name: name, link: link}));
+            
+            tg.sendData(JSON.stringify({
+                action: "edit", 
+                id: oldId, 
+                new_id: newId, 
+                name: name, 
+                link: link
+            }));
         }
 
         function addMentor() {
