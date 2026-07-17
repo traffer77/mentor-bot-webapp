@@ -2,55 +2,163 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Меню Бота</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* Основные стили и переменные Telegram */
         body {
-            background-color: var(--tg-theme-bg-color, #ffffff);
+            background-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
             color: var(--tg-theme-text-color, #000000);
-            font-family: sans-serif;
-            padding: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            display: flex;
-            flex-direction: column;
+            padding: 16px;
+            -webkit-font-smoothing: antialiased;
         }
-        h3 { margin-top: 0; }
-        
-        /* Вкладки для Админа */
-        .tab { display: none; }
-        .tab.active { display: block; }
-        .tabs-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        p.subtitle {
+            color: var(--tg-theme-hint-color, #8e8e93);
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        /* Контейнеры-карточки */
+        .card {
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            margin-bottom: 16px;
+        }
+
+        /* Навигация (Табы) */
+        .tabs-nav {
+            display: flex;
+            background: var(--tg-theme-bg-color, #ffffff);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        }
         .tabs-nav button {
-            flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer;
-            background: var(--tg-theme-secondary-bg-color, #eee);
-            color: var(--tg-theme-text-color, #000);
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            background: transparent;
+            color: var(--tg-theme-hint-color, #8e8e93);
+            transition: all 0.2s ease;
         }
         .tabs-nav button.active {
             background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            box-shadow: 0 2px 6px rgba(51, 144, 236, 0.3);
         }
 
-        /* Формы и кнопки */
+        /* Анимация переключения вкладок */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Поля ввода */
         input {
-            width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 12px;
-            border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #ccc);
-            background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color);
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            color: var(--tg-theme-text-color, #000);
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
         }
+        input:focus {
+            border-color: var(--tg-theme-button-color, #3390ec);
+            background: var(--tg-theme-bg-color, #ffffff);
+        }
+
+        /* Кнопки */
         .btn {
-            width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
             background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            transition: transform 0.1s, opacity 0.2s;
         }
-        .btn-danger { background: #e53935; color: white; }
+        .btn:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+        .btn-danger {
+            background: #ff3b30;
+            color: #ffffff;
+        }
+
+        /* Списки и элементы */
+        .mentor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #eee);
+        }
+        .mentor-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .mentor-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .mentor-info b {
+            font-size: 16px;
+        }
+        .mentor-info small {
+            color: var(--tg-theme-hint-color, #8e8e93);
+            font-size: 13px;
+        }
         
-        /* Карточки помощников */
-        .mentor-card {
-            padding: 12px; border-radius: 8px; margin-bottom: 10px;
-            background: var(--tg-theme-secondary-bg-color, #f4f4f4);
-            display: flex; justify-content: space-between; align-items: center;
+        /* Карточка для ученика */
+        .student-mentor-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
         }
-        .mentor-info { display: flex; flex-direction: column; gap: 4px; }
+        .student-mentor-card b {
+            font-size: 18px;
+        }
+        .emoji-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 <body>
@@ -58,40 +166,43 @@
     <!-- ПАНЕЛЬ АДМИНА -->
     <div id="admin-view" style="display: none;">
         <div class="tabs-nav">
-            <button id="btn-add" class="active" onclick="switchTab('add')">Добавить</button>
-            <button id="btn-list" onclick="switchTab('list')">Управление</button>
+            <button id="btn-add" class="active" onclick="switchTab('add')">➕ Добавить</button>
+            <button id="btn-list" onclick="switchTab('list')">⚙️ Управление</button>
         </div>
         
-        <div id="tab-add" class="tab active">
-            <h3>Новый Хелпер</h3>
-            <input type="text" id="mId" placeholder="ID (например, 123456789)">
-            <input type="text" id="mName" placeholder="Имя Хелпера">
-            <input type="text" id="mLink" placeholder="Ссылка на группу">
-            <button class="btn" onclick="addMentor()">Сохранить</button>
+        <div id="tab-add" class="tab-content active">
+            <div class="card">
+                <h3>Новый Хелпер</h3>
+                <input type="number" id="mId" placeholder="ID (например, 123456789)">
+                <input type="text" id="mName" placeholder="Имя Хелпера">
+                <input type="url" id="mLink" placeholder="Ссылка на группу (https://...)">
+                <button class="btn" style="margin-top: 8px;" onclick="addMentor()">Сохранить Хелпера</button>
+            </div>
         </div>
         
-        <div id="tab-list" class="tab">
-            <h3>Список Хелперов</h3>
-            <div id="admin-mentor-list"></div>
+        <div id="tab-list" class="tab-content">
+            <div class="card">
+                <h3>Список Хелперов</h3>
+                <div id="admin-mentor-list"></div>
+            </div>
         </div>
     </div>
 
     <!-- ПАНЕЛЬ УЧЕНИКА -->
     <div id="user-view" style="display: none;">
-        <h3>Выберите Хелпера</h3>
-        <p style="color: var(--tg-theme-hint-color); font-size: 14px;">Нажмите на кнопку рядом с нужным хелпером, чтобы закрепиться за ним.</p>
+        <h3>Выбор Хелпера</h3>
+        <p class="subtitle">Ознакомьтесь со списком доступных наставников и выберите того, за кем хотите закрепиться.</p>
         <div id="user-mentor-list"></div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready();
 
-        const ADMIN_ID = 1067353940; // Твой ID
-        // Получаем ID пользователя, который открыл Web App
+        const ADMIN_ID = 1067353940; 
         let userId = tg.initDataUnsafe?.user?.id || 0;
 
-        // Распаковываем список хелперов из URL
         const urlParams = new URLSearchParams(window.location.search);
         let mentors = [];
         try {
@@ -99,7 +210,6 @@
             if (mParam) mentors = JSON.parse(decodeURIComponent(mParam));
         } catch(e) { console.error("Ошибка парсинга:", e); }
 
-        // Определяем, что показывать
         if (userId === ADMIN_ID) {
             document.getElementById('admin-view').style.display = 'block';
             renderAdminList();
@@ -110,23 +220,28 @@
 
         // --- ЛОГИКА ИНТЕРФЕЙСА ---
         function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tabs-nav button').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.add('active');
             document.getElementById('btn-' + tab).classList.add('active');
+            
+            // Легкая вибрация при переключении табов
+            tg.HapticFeedback.selectionChanged();
         }
 
         function renderAdminList() {
             let html = '';
-            if (mentors.length === 0) html = "<p>Список пуст</p>";
+            if (mentors.length === 0) {
+                html = "<p style='color: gray; text-align: center; padding: 10px 0;'>Список пока пуст</p>";
+            }
             mentors.forEach(m => {
                 html += `
-                <div class="mentor-card">
+                <div class="mentor-item">
                     <div class="mentor-info">
-                        <b>${m.name}</b>
-                        <small style="color: gray;">ID: ${m.id}</small>
+                        <b>👨‍🏫 ${m.name}</b>
+                        <small>ID: ${m.id}</small>
                     </div>
-                    <button class="btn btn-danger" style="width: auto; padding: 8px 15px;" onclick="deleteMentor('${m.id}')">Удалить</button>
+                    <button class="btn btn-danger" style="width: auto; padding: 8px 16px; font-size: 14px; border-radius: 8px;" onclick="deleteMentor('${m.id}')">Удалить</button>
                 </div>`;
             });
             document.getElementById('admin-mentor-list').innerHTML = html;
@@ -134,12 +249,15 @@
 
         function renderUserList() {
             let html = '';
-            if (mentors.length === 0) html = "<p>Пока нет доступных хелперов</p>";
+            if (mentors.length === 0) {
+                html = "<div class='card'><p style='text-align: center;'>Пока нет доступных хелперов 😔</p></div>";
+            }
             mentors.forEach(m => {
                 html += `
-                <div class="mentor-card" style="flex-direction: column; align-items: stretch; gap: 10px;">
-                    <div style="text-align: center;"><b>${m.name}</b></div>
-                    <button class="btn" onclick="selectMentor('${m.id}')">Выбрать</button>
+                <div class="card student-mentor-card">
+                    <div class="emoji-icon">🎓</div>
+                    <b>${m.name}</b>
+                    <button class="btn" onclick="selectMentor('${m.id}')">Выбрать наставника</button>
                 </div>`;
             });
             document.getElementById('user-mentor-list').innerHTML = html;
@@ -147,21 +265,30 @@
 
         // --- ОТПРАВКА ДАННЫХ В БОТА ---
         function addMentor() {
-            let id = document.getElementById('mId').value;
-            let name = document.getElementById('mName').value;
-            let link = document.getElementById('mLink').value;
-            if(!id || !name || !link) return tg.showAlert("Заполните все поля!");
+            let id = document.getElementById('mId').value.trim();
+            let name = document.getElementById('mName').value.trim();
+            let link = document.getElementById('mLink').value.trim();
             
+            if(!id || !name || !link) {
+                tg.HapticFeedback.notificationOccurred('error');
+                return tg.showAlert("Пожалуйста, заполните все поля перед сохранением!");
+            }
+            
+            tg.HapticFeedback.notificationOccurred('success');
             tg.sendData(JSON.stringify({action: "add", id: id, name: name, link: link}));
         }
 
         function deleteMentor(id) {
-            tg.showConfirm("Уверены, что хотите удалить этого хелпера?", (confirm) => {
-                if(confirm) tg.sendData(JSON.stringify({action: "delete", id: id}));
+            tg.HapticFeedback.impactOccurred('medium');
+            tg.showConfirm("Вы уверены, что хотите безвозвратно удалить этого Хелпера?", (confirm) => {
+                if(confirm) {
+                    tg.sendData(JSON.stringify({action: "delete", id: id}));
+                }
             });
         }
 
         function selectMentor(id) {
+            tg.HapticFeedback.impactOccurred('heavy');
             tg.sendData(JSON.stringify({action: "select", id: id}));
         }
     </script>
