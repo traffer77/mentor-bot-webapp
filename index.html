@@ -17,7 +17,6 @@
         h3 { margin-top: 0; margin-bottom: 8px; font-size: 22px; font-weight: 700; }
         p.subtitle { color: var(--tg-theme-hint-color, #8e8e93); font-size: 14px; margin-bottom: 16px; line-height: 1.4; }
         
-        /* Табы для админа */
         .tabs-nav { display: flex; background: var(--tg-theme-secondary-bg-color, #f4f4f5); border-radius: 10px; padding: 3px; margin-bottom: 20px; }
         .tabs-nav button { flex: 1; padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; background: transparent; color: var(--tg-theme-hint-color, #8e8e93); transition: 0.2s; white-space: nowrap;}
         .tabs-nav button.active { background: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -26,15 +25,13 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Поля ввода */
-        .input-group { margin-bottom: 12px; }
+        .input-group { margin-bottom: 12px; position: relative; }
         input { width: 100%; box-sizing: border-box; padding: 12px 16px; border-radius: 12px; border: none; background: var(--tg-theme-secondary-bg-color, #f4f4f5); color: var(--tg-theme-text-color, #000); font-size: 16px; outline: none; transition: 0.2s; }
         input:focus { box-shadow: 0 0 0 2px var(--tg-theme-button-color, #3390ec) inset; }
         
         .clear-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; background: var(--tg-theme-hint-color, #8e8e93); color: var(--tg-theme-bg-color, #fff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; opacity: 0; pointer-events: none; transition: 0.2s; }
         .clear-btn.visible { opacity: 1; pointer-events: auto; }
 
-        /* Кнопки */
         .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #ffffff); transition: 0.2s; }
         .btn:active { transform: scale(0.97); opacity: 0.9; }
         .btn-small { width: auto; padding: 8px 16px; font-size: 14px; border-radius: 18px; }
@@ -42,7 +39,6 @@
         .btn-secondary { background: var(--tg-theme-secondary-bg-color, #f4f4f5); color: var(--tg-theme-text-color); border: 1px solid #e5e5ea; }
         .btn-icon { padding: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 18px; }
 
-        /* Компактный список */
         .list-container { margin-top: 8px; padding-bottom: 20px; }
         .list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; transition: background 0.2s; }
         .list-item:active { background: var(--tg-theme-secondary-bg-color, #f4f4f5); }
@@ -55,11 +51,9 @@
         .item-text small { color: var(--tg-theme-hint-color, #8e8e93); font-size: 13px; margin-top: 2px; }
         .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-        /* Шапка */
         .sticky-header { position: sticky; top: 0; background: var(--tg-theme-bg-color, #ffffff); z-index: 10; padding: 16px 16px 8px 16px; border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #f4f4f5); }
         .stats-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--tg-theme-hint-color, #8e8e93); font-weight: 500; margin-bottom: 4px; padding: 0 16px; }
 
-        /* Модальное окно */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
         .modal-overlay.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .modal { background: var(--tg-theme-bg-color, #fff); padding: 24px 16px 32px 16px; border-radius: 20px 20px 0 0; width: 100%; box-sizing: border-box; }
@@ -86,11 +80,9 @@
                 <button id="btnAdd" class="btn" onclick="addMentor()" style="margin-top: 10px;">Сохранить</button>
             </div>
 
-            <!-- ВКЛАДКА ФУНКЦИИ -->
             <div id="tab-tools" class="tab-content">
                 <h3>Дополнительно</h3>
                 <p class="subtitle">Управление проектом и базой данных</p>
-                
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <button class="btn btn-secondary" onclick="sendAction('invite')">🔗 Создать инвайт-ссылку</button>
                     <button class="btn btn-secondary" onclick="sendAction('stats')">📈 Статистика</button>
@@ -101,15 +93,12 @@
         </div>
         
         <div id="tab-list" class="tab-content">
-            <div class="stats-row" style="padding-top: 8px;">
-                <span>ВСЕГО ПОМОЩНИКОВ</span>
-                <span id="adminCount">0</span>
-            </div>
+            <div class="stats-row" style="padding-top: 8px;"><span>ВСЕГО ПОМОЩНИКОВ</span><span id="adminCount">0</span></div>
             <div id="admin-mentor-list" class="list-container"></div>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ -->
+    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ (АДМИН) -->
     <div id="edit-modal" class="modal-overlay">
         <div class="modal">
             <h3 style="margin-bottom: 20px;">Редактировать</h3>
@@ -130,16 +119,25 @@
         <div class="sticky-header">
             <h3>Наставники</h3>
             <p class="subtitle">Выберите хелпера для начала работы.</p>
-            <div class="input-group" style="margin-bottom: 0; position: relative;">
+            <div class="input-group" style="margin-bottom: 0;">
                 <input type="text" id="searchInput" placeholder="Поиск по имени..." oninput="filterUserList()">
                 <div id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✖</div>
             </div>
         </div>
         
-        <div class="stats-row" style="margin-top: 12px;">
-            <span>ДОСТУПНЫЕ</span><span id="userCount">0</span>
-        </div>
+        <div class="stats-row" style="margin-top: 12px;"><span>ДОСТУПНЫЕ</span><span id="userCount">0</span></div>
         <div id="user-mentor-list" class="list-container"></div>
+    </div>
+
+    <!-- ПАНЕЛЬ ХЕЛПЕРА (НОВОЕ) -->
+    <div id="mentor-view" style="display: none;">
+        <div class="sticky-header">
+            <h3>Мои ученики</h3>
+            <p class="subtitle">Управление закрепленными за вами пользователями.</p>
+        </div>
+        
+        <div class="stats-row" style="margin-top: 12px;"><span>АКТИВНЫЕ УЧЕНИКИ</span><span id="mentorCount">0</span></div>
+        <div id="mentor-student-list" class="list-container"></div>
     </div>
 
     <script>
@@ -147,40 +145,38 @@
         tg.expand(); tg.ready();
 
         const urlParams = new URLSearchParams(window.location.search);
-        let mentors = [];
+        let parsedData = [];
         let userRole = urlParams.get('role') || 'student'; 
         
         try {
-            let mParam = urlParams.get('data');
-            if (mParam) mentors = JSON.parse(decodeURIComponent(mParam));
+            let dataParam = urlParams.get('data');
+            if (dataParam) parsedData = JSON.parse(decodeURIComponent(dataParam));
         } catch(e) { console.error("Ошибка парсинга:", e); }
 
         if (userRole === 'admin') {
             document.getElementById('admin-view').style.display = 'block';
-            renderAdminList();
+            renderAdminList(parsedData);
+        } else if (userRole === 'mentor') {
+            document.getElementById('mentor-view').style.display = 'block';
+            document.getElementById('mentorCount').innerText = parsedData.length;
+            renderMentorList(parsedData);
         } else {
             document.getElementById('user-view').style.display = 'block';
-            document.getElementById('userCount').innerText = mentors.length;
-            renderUserList(mentors);
+            document.getElementById('userCount').innerText = parsedData.length;
+            renderUserList(parsedData);
         }
 
+        // --- УТИЛИТЫ ---
         function isValidUrl(string) { return /^(https?:\/\/|t\.me\/)/i.test(string.trim()); }
-        
-        function setLoading(btnId, text) {
-            let btn = document.getElementById(btnId);
-            btn.innerText = text; btn.style.opacity = '0.7'; btn.style.pointerEvents = 'none';
-        }
-
+        function setLoading(btnId, text) { let btn = document.getElementById(btnId); btn.innerText = text; btn.style.opacity = '0.7'; btn.style.pointerEvents = 'none'; }
         function getAvatarColor(name) {
             const colors = ['#e56555', '#f28c48', '#8e85ee', '#549cdd', '#4cb382', '#6dc534', '#e17076'];
             let hash = 0;
             for (let i = 0; i < name.length; i++) { hash = name.charCodeAt(i) + ((hash << 5) - hash); }
             return colors[Math.abs(hash) % colors.length];
         }
-
-        function getInitial(name) { return name ? Array.from(name.trim())[0].toUpperCase() : '?'; }
-
-        // Отрисовка аватарки (картинка или кружок)
+        function getInitial(name) { return name ? Array.from(name.replace('@', '').trim())[0].toUpperCase() : '?'; }
+        
         function getAvatarHtml(name, avatarUrl) {
             if (avatarUrl && isValidUrl(avatarUrl)) {
                 return `<img src="${avatarUrl}" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="avatar" style="display:none; background-color: ${getAvatarColor(name)}">${getInitial(name)}</div>`;
@@ -188,6 +184,7 @@
             return `<div class="avatar" style="background-color: ${getAvatarColor(name)}">${getInitial(name)}</div>`;
         }
 
+        // --- ЛОГИКА АДМИНА ---
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tabs-nav button').forEach(b => b.classList.remove('active'));
@@ -196,7 +193,7 @@
             tg.HapticFeedback.selectionChanged();
         }
 
-        function renderAdminList() {
+        function renderAdminList(mentors) {
             document.getElementById('adminCount').innerText = mentors.length;
             let html = '';
             if (mentors.length === 0) html = "<div style='text-align: center; color: gray; margin-top: 20px;'>Список пуст</div>";
@@ -266,12 +263,12 @@
             });
         }
 
-        // Отправка действий с вкладки "Функции"
         function sendAction(act) {
             tg.HapticFeedback.impactOccurred('medium');
             tg.sendData(JSON.stringify({ action: act }));
         }
 
+        // --- ЛОГИКА УЧЕНИКА ---
         function renderUserList(list) {
             let html = '';
             if (list.length === 0) html = "<div style='text-align: center; color: gray; margin-top: 30px;'>Ничего не найдено 😔</div>";
@@ -294,7 +291,7 @@
             let query = document.getElementById('searchInput').value.toLowerCase();
             let btnClear = document.getElementById('clearSearchBtn');
             if (query.length > 0) { btnClear.classList.add('visible'); } else { btnClear.classList.remove('visible'); }
-            let filtered = mentors.filter(m => m.name.toLowerCase().includes(query));
+            let filtered = parsedData.filter(m => m.name.toLowerCase().includes(query));
             document.getElementById('userCount').innerText = filtered.length;
             renderUserList(filtered);
         }
@@ -305,6 +302,36 @@
             tg.HapticFeedback.impactOccurred('heavy');
             setLoading(`btnSelect_${id}`, '⏳');
             tg.sendData(JSON.stringify({ action: "select", id: id }));
+        }
+
+        // --- ЛОГИКА ХЕЛПЕРА (НОВОЕ) ---
+        function renderMentorList(studentsList) {
+            let html = '';
+            if (studentsList.length === 0) {
+                html = "<div style='text-align: center; color: gray; margin-top: 30px;'>У вас пока нет активных учеников 😔</div>";
+            }
+            
+            studentsList.forEach(s => {
+                let avatarHtml = getAvatarHtml(s.username, ""); // У учеников нет кастомных аватарок, генерируем кружок
+                html += `
+                <div class="list-item">
+                    <div class="item-info">
+                        ${avatarHtml}
+                        <div class="item-text"><b>${s.username}</b><small>ID: ${s.id}</small></div>
+                    </div>
+                    <button class="btn btn-danger btn-small" onclick="mentorUnpinStudent('${s.id}')">Открепить</button>
+                </div>`;
+            });
+            document.getElementById('mentor-student-list').innerHTML = html;
+        }
+
+        function mentorUnpinStudent(studentId) {
+            tg.HapticFeedback.impactOccurred('medium');
+            tg.showConfirm("Запросить у администратора открепление этого ученика?", (confirm) => {
+                if(confirm) {
+                    tg.sendData(JSON.stringify({ action: "mentor_unpin", student_id: studentId }));
+                }
+            });
         }
     </script>
 </body>
