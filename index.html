@@ -3,71 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ Панель</title>
-    <!-- Подключаем скрипт Telegram Web App -->
+    <title>Меню Бота</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            /* Используем переменные цветов самого Telegram */
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
             font-family: sans-serif;
-            padding: 20px;
+            padding: 15px;
+            margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 15px;
         }
-        input, button {
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--tg-theme-hint-color, #ccc);
-            background-color: var(--tg-theme-secondary-bg-color, #f4f4f4);
+        h3 { margin-top: 0; }
+        
+        /* Вкладки для Админа */
+        .tab { display: none; }
+        .tab.active { display: block; }
+        .tabs-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tabs-nav button {
+            flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer;
+            background: var(--tg-theme-secondary-bg-color, #eee);
             color: var(--tg-theme-text-color, #000);
-            font-size: 16px;
         }
-        button {
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
+        .tabs-nav button.active {
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #fff);
         }
+
+        /* Формы и кнопки */
+        input {
+            width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 12px;
+            border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #ccc);
+            background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color);
+        }
+        .btn {
+            width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #fff);
+        }
+        .btn-danger { background: #e53935; color: white; }
+        
+        /* Карточки помощников */
+        .mentor-card {
+            padding: 12px; border-radius: 8px; margin-bottom: 10px;
+            background: var(--tg-theme-secondary-bg-color, #f4f4f4);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .mentor-info { display: flex; flex-direction: column; gap: 4px; }
     </style>
 </head>
 <body>
 
-    <h2>Добавить Хелпера</h2>
-    <input type="text" id="mentorId" placeholder="ID Хелпера (например, 123456789)">
-    <input type="text" id="mentorName" placeholder="Имя Хелпера">
-    <input type="text" id="mentorLink" placeholder="Ссылка на группу">
-    
-    <button onclick="sendDataToBot()">Добавить</button>
+    <!-- ПАНЕЛЬ АДМИНА -->
+    <div id="admin-view" style="display: none;">
+        <div class="tabs-nav">
+            <button id="btn-add" class="active" onclick="switchTab('add')">Добавить</button>
+            <button id="btn-list" onclick="switchTab('list')">Управление</button>
+        </div>
+        
+        <div id="tab-add" class="tab active">
+            <h3>Новый Хелпер</h3>
+            <input type="text" id="mId" placeholder="ID (например, 123456789)">
+            <input type="text" id="mName" placeholder="Имя Хелпера">
+            <input type="text" id="mLink" placeholder="Ссылка на группу">
+            <button class="btn" onclick="addMentor()">Сохранить</button>
+        </div>
+        
+        <div id="tab-list" class="tab">
+            <h3>Список Хелперов</h3>
+            <div id="admin-mentor-list"></div>
+        </div>
+    </div>
+
+    <!-- ПАНЕЛЬ УЧЕНИКА -->
+    <div id="user-view" style="display: none;">
+        <h3>Выберите Хелпера</h3>
+        <p style="color: var(--tg-theme-hint-color); font-size: 14px;">Нажмите на кнопку рядом с нужным хелпером, чтобы закрепиться за ним.</p>
+        <div id="user-mentor-list"></div>
+    </div>
 
     <script>
-        // Инициализируем Web App
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Открываем на весь экран
+        tg.expand();
 
-        function sendDataToBot() {
-            let id = document.getElementById("mentorId").value;
-            let name = document.getElementById("mentorName").value;
-            let link = document.getElementById("mentorLink").value;
+        const ADMIN_ID = 1067353940; // Твой ID
+        // Получаем ID пользователя, который открыл Web App
+        let userId = tg.initDataUnsafe?.user?.id || 0;
 
-            if (!id || !name || !link) {
-                tg.showAlert("Заполните все поля!");
-                return;
-            }
+        // Распаковываем список хелперов из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let mentors = [];
+        try {
+            let mParam = urlParams.get('data');
+            if (mParam) mentors = JSON.parse(decodeURIComponent(mParam));
+        } catch(e) { console.error("Ошибка парсинга:", e); }
 
-            // Формируем JSON с данными
-            let data = {
-                action: "add_mentor",
-                mentor_id: id,
-                mentor_name: name,
-                mentor_link: link
-            };
+        // Определяем, что показывать
+        if (userId === ADMIN_ID) {
+            document.getElementById('admin-view').style.display = 'block';
+            renderAdminList();
+        } else {
+            document.getElementById('user-view').style.display = 'block';
+            renderUserList();
+        }
 
-            // Отправляем данные обратно в aiogram и закрываем Web App
-            tg.sendData(JSON.stringify(data));
+        // --- ЛОГИКА ИНТЕРФЕЙСА ---
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tabs-nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('btn-' + tab).classList.add('active');
+        }
+
+        function renderAdminList() {
+            let html = '';
+            if (mentors.length === 0) html = "<p>Список пуст</p>";
+            mentors.forEach(m => {
+                html += `
+                <div class="mentor-card">
+                    <div class="mentor-info">
+                        <b>${m.name}</b>
+                        <small style="color: gray;">ID: ${m.id}</small>
+                    </div>
+                    <button class="btn btn-danger" style="width: auto; padding: 8px 15px;" onclick="deleteMentor('${m.id}')">Удалить</button>
+                </div>`;
+            });
+            document.getElementById('admin-mentor-list').innerHTML = html;
+        }
+
+        function renderUserList() {
+            let html = '';
+            if (mentors.length === 0) html = "<p>Пока нет доступных хелперов</p>";
+            mentors.forEach(m => {
+                html += `
+                <div class="mentor-card" style="flex-direction: column; align-items: stretch; gap: 10px;">
+                    <div style="text-align: center;"><b>${m.name}</b></div>
+                    <button class="btn" onclick="selectMentor('${m.id}')">Выбрать</button>
+                </div>`;
+            });
+            document.getElementById('user-mentor-list').innerHTML = html;
+        }
+
+        // --- ОТПРАВКА ДАННЫХ В БОТА ---
+        function addMentor() {
+            let id = document.getElementById('mId').value;
+            let name = document.getElementById('mName').value;
+            let link = document.getElementById('mLink').value;
+            if(!id || !name || !link) return tg.showAlert("Заполните все поля!");
+            
+            tg.sendData(JSON.stringify({action: "add", id: id, name: name, link: link}));
+        }
+
+        function deleteMentor(id) {
+            tg.showConfirm("Уверены, что хотите удалить этого хелпера?", (confirm) => {
+                if(confirm) tg.sendData(JSON.stringify({action: "delete", id: id}));
+            });
+        }
+
+        function selectMentor(id) {
+            tg.sendData(JSON.stringify({action: "select", id: id}));
         }
     </script>
 </body>
