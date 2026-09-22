@@ -147,7 +147,7 @@
       WEBAPP_URL=https://ваш-домен/webapp/index.html
       Перезапустите бота и нажмите /start.
     */
-    let CATALOG = { categories: [], products: [] };
+    let CATALOG = { categories: [], products: [], payment_methods: [] };
 
     function decodeCatalogToken(token) {
       try {
@@ -332,8 +332,17 @@
           else if (go.startsWith("product:")) screen = { name: "product", id: Number(go.slice(8)) };
           else if (go.startsWith("pay:")) {
             const item = CATALOG.products.find((p) => p.id === Number(go.slice(4)));
-            if (item && send({ action: "pay", product_id: item.id, title: item.title })) return;
-            screen = { name: "invoice", id: item ? item.id : screen.id };
+            if (CATALOG.payment_methods && CATALOG.payment_methods.length > 0) {
+              screen = { name: "pay_methods", id: item.id };
+            } else {
+              if (item && send({ action: "pay", product_id: item.id, title: item.title })) return;
+              screen = { name: "invoice", id: item ? item.id : screen.id };
+            }
+          }
+          else if (go.startsWith("pay_method:")) {
+            const parts = go.split(":");
+            send({ action: "pay_method", product_id: Number(parts[1]), method_id: Number(parts[2]) });
+            return;
           }
           render();
         };
@@ -367,6 +376,23 @@
         return '<button class="back" data-go="product:' + product.id + '">' + esc(t.back) + "</button>" +
           '<div class="card"><h2>' + esc(t.invoice) + "</h2><p>" + esc(product.title) + " · " + esc(product.price) + "</p><p>" + esc(t.invoiceHint) + "</p></div>";
       }
+
+      if (screen.name === "pay_methods" && product) {
+        let html = '<button class="back" data-go="product:' + product.id + '">' + esc(t.back) + "</button>";
+        html += '<div class="card"><h2>' + esc(t.payWith) + "</h2><p>" + esc(product.title) + " · " + esc(product.price) + "</p></div>";
+
+        CATALOG.payment_methods.forEach(pm => {
+          let icon = "💳";
+          if (pm.ptype === "crypto" || pm.ptype === "cryptobot") icon = "🪙";
+          if (pm.ptype === "xrocket" || pm.ptype === "rocket") icon = "🚀";
+          if (pm.ptype === "stars") icon = "⭐️";
+          if (pm.ptype === "manual") icon = "🧾";
+
+          html += '<button class="card action ghost" style="justify-content:flex-start; padding-left:16px; margin-bottom:8px;" data-go="pay_method:' + product.id + ':' + pm.id + '">' + icon + ' ' + esc(pm.name) + '</button>';
+        });
+        return html;
+      }
+
       if (screen.name === "product" && product) {
         const back = CATALOG.categories.length > 1 ? "cat:" + product.category_id : "list";
         const channels = (product.channels || []).map((c) => '<div class="card"><h2>' + esc(c) + "</h2></div>").join("");
