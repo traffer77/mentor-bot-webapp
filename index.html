@@ -1,338 +1,403 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Меню Бота</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; -webkit-font-smoothing: antialiased;
-        }
-        
-        .container { padding: 16px; }
-        h3 { margin-top: 0; margin-bottom: 8px; font-size: 22px; font-weight: 700; }
-        p.subtitle { color: var(--tg-theme-hint-color, #8e8e93); font-size: 14px; margin-bottom: 16px; line-height: 1.4; }
-        
-        .tabs-nav { display: flex; background: var(--tg-theme-secondary-bg-color, #f4f4f5); border-radius: 10px; padding: 3px; margin-bottom: 20px; }
-        .tabs-nav button { flex: 1; padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; background: transparent; color: var(--tg-theme-hint-color, #8e8e93); transition: 0.2s; white-space: nowrap;}
-        .tabs-nav button.active { background: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .input-group { margin-bottom: 12px; position: relative; }
-        input { width: 100%; box-sizing: border-box; padding: 12px 16px; border-radius: 12px; border: none; background: var(--tg-theme-secondary-bg-color, #f4f4f5); color: var(--tg-theme-text-color, #000); font-size: 16px; outline: none; transition: 0.2s; }
-        input:focus { box-shadow: 0 0 0 2px var(--tg-theme-button-color, #3390ec) inset; }
-        
-        .clear-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; background: var(--tg-theme-hint-color, #8e8e93); color: var(--tg-theme-bg-color, #fff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; opacity: 0; pointer-events: none; transition: 0.2s; }
-        .clear-btn.visible { opacity: 1; pointer-events: auto; }
-
-        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #ffffff); transition: 0.2s; }
-        .btn:active { transform: scale(0.97); opacity: 0.9; }
-        .btn-small { width: auto; padding: 8px 16px; font-size: 14px; border-radius: 18px; }
-        .btn-danger { background: #ff3b30; color: #ffffff; }
-        .btn-secondary { background: var(--tg-theme-secondary-bg-color, #f4f4f5); color: var(--tg-theme-text-color); border: 1px solid #e5e5ea; }
-        .btn-icon { padding: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 18px; }
-
-        .list-container { margin-top: 8px; padding-bottom: 20px; }
-        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; transition: background 0.2s; }
-        .list-item:active { background: var(--tg-theme-secondary-bg-color, #f4f4f5); }
-        .item-info { display: flex; align-items: center; gap: 12px; overflow: hidden; }
-        
-        .avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 600; flex-shrink: 0; object-fit: cover; }
-        
-        .item-text { display: flex; flex-direction: column; overflow: hidden; }
-        .item-text b { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-text small { color: var(--tg-theme-hint-color, #8e8e93); font-size: 13px; margin-top: 2px; }
-        .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-        .sticky-header { position: sticky; top: 0; background: var(--tg-theme-bg-color, #ffffff); z-index: 10; padding: 16px 16px 8px 16px; border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #f4f4f5); }
-        .stats-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--tg-theme-hint-color, #8e8e93); font-weight: 500; margin-bottom: 4px; padding: 0 16px; }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
-        .modal-overlay.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .modal { background: var(--tg-theme-bg-color, #fff); padding: 24px 16px 32px 16px; border-radius: 20px 20px 0 0; width: 100%; box-sizing: border-box; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e1621" />
+  <title>Aura</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e1621;
+      --header: #17212b;
+      --bubble: #182533;
+      --text: #e4eaf0;
+      --hint: #6d7f8f;
+      --link: #6ab3f3;
+      --btn: #2b3948;
+      --primary: #3390ec;
+      --success: #31b545;
+      --steel: #8ea0b8;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      max-width: 32rem;
+      margin: 0 auto;
+    }
+    header { padding: 14px 16px 8px; }
+    .kicker {
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--steel);
+    }
+    h1 { margin: 6px 0 0; font-size: 26px; font-weight: 650; letter-spacing: -0.03em; }
+    .lead { margin: 6px 0 0; color: var(--hint); font-size: 14px; line-height: 1.45; }
+    main { flex: 1; overflow: auto; padding: 8px 16px 12px; }
+    nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: var(--header);
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+    nav button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--hint);
+      min-height: 52px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    nav button[aria-current="page"] { color: var(--link); }
+    .card, .row {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      color: inherit;
+      font: inherit;
+    }
+    .card {
+      display: block;
+      background: var(--bubble);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+    .card h2 { margin: 0; font-size: 16px; }
+    .card p, .muted { color: var(--hint); font-size: 14px; line-height: 1.45; }
+    .price { margin: 12px 0 0; color: var(--link); font-size: 14px; font-weight: 600; }
+    .badge {
+      float: right;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .action, .ghost {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 44px;
+      border: 0;
+      border-radius: 12px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 650;
+      margin-top: 10px;
+    }
+    .action { background: var(--success); color: #fff; }
+    .action.blue { background: var(--primary); }
+    .ghost { background: var(--btn); color: var(--text); }
+    .back {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--link);
+      font: inherit;
+      font-size: 14px;
+      padding: 0 0 8px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 128px;
+      resize: none;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--header);
+      color: var(--text);
+      padding: 12px;
+      font: inherit;
+      font-size: 14px;
+    }
+    .lang {
+      float: right;
+      margin-top: 2px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--btn);
+      color: var(--text);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      min-height: 32px;
+      padding: 0 12px;
+    }
+  </style>
 </head>
 <body>
+  <div id="app"></div>
+  <script>
+    /*
+      Единственный файл Mini App. Залейте его на HTTPS и в .env бота:
+      WEBAPP_URL=https://ваш-домен/webapp/index.html
+      Перезапустите бота и нажмите /start — появится кнопка «Приложение».
 
-    <!-- ПАНЕЛЬ АДМИНА -->
-    <div id="admin-view" style="display: none;">
-        <div class="container" style="padding-bottom: 0;">
-            <div class="tabs-nav">
-                <button id="btn-add" class="active" onclick="switchTab('add')">➕ Добавить</button>
-                <button id="btn-list" onclick="switchTab('list')">⚙️ Управление</button>
-                <button id="btn-tools" onclick="switchTab('tools')">🛠 Функции</button>
-            </div>
-            
-            <div id="tab-add" class="tab-content active">
-                <h3>Новый Хелпер</h3>
-                <div class="input-group"><input type="text" id="mId" placeholder="Telegram ID"></div>
-                <div class="input-group"><input type="text" id="mName" placeholder="Имя Хелпера"></div>
-                <div class="input-group"><input type="url" id="mLink" placeholder="Ссылка (https:// или t.me/)"></div>
-                <div class="input-group"><input type="url" id="mAvatar" placeholder="Ссылка на фото (необязательно)"></div>
-                <button id="btnAdd" class="btn" onclick="addMentor()" style="margin-top: 10px;">Сохранить</button>
-            </div>
+      id тарифа — число из админки бота. title должен совпадать с названием товара,
+      если id не совпадёт: бот ищет тариф по названию.
+    */
+    const PRODUCTS = [
+      {
+        id: 1,
+        title: { ru: "Базовый", en: "Starter" },
+        desc: {
+          ru: "Доступ ко всем закрытым каналам на 30 дней. Ссылки с защитой от пересылки.",
+          en: "Access to all private channels for 30 days. Forward-protected invite links.",
+        },
+        price: "9.99 USD",
+        days: 30,
+        channels: ["VIP Club", "Signals"],
+      },
+      {
+        id: 2,
+        title: { ru: "Про", en: "Pro" },
+        desc: {
+          ru: "Всё из Базового + приоритетная поддержка и закрытый чат.",
+          en: "Everything in Starter plus priority support and a private chat.",
+        },
+        price: "24.90 USD",
+        days: 90,
+        channels: ["VIP Club", "Signals", "Pro Chat"],
+      },
+    ];
 
-            <div id="tab-tools" class="tab-content">
-                <h3>Дополнительно</h3>
-                <p class="subtitle">Управление проектом и базой данных</p>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <button class="btn btn-secondary" onclick="sendAction('invite')">🔗 Создать инвайт-ссылку</button>
-                    <button class="btn btn-secondary" onclick="sendAction('stats')">📈 Статистика</button>
-                    <button class="btn btn-secondary" onclick="sendAction('backup')">📦 Скачать базу</button>
-                    <button class="btn btn-secondary" onclick="sendAction('broadcast')">📢 Массовая рассылка</button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="tab-list" class="tab-content">
-            <div class="stats-row" style="padding-top: 8px;"><span>ВСЕГО ПОМОЩНИКОВ</span><span id="adminCount">0</span></div>
-            <div id="admin-mentor-list" class="list-container"></div>
-        </div>
-    </div>
+    const T = {
+      ru: {
+        shop: "Тарифы",
+        lead: "Каталог и оплата. Меню в чате остаётся.",
+        sub: "Ваши подписки",
+        chat: "Поддержка",
+        tabShop: "Магазин",
+        tabSub: "Подписка",
+        tabChat: "Чат",
+        hit: "Хит",
+        days: "дней",
+        price: "Цена",
+        duration: "Срок",
+        access: "Доступ после оплаты",
+        pay: "Оплатить",
+        back: "Назад",
+        payWith: "Чем оплатить",
+        stars: "Telegram Stars",
+        xrocket: "xRocket",
+        crypto: "CryptoBot",
+        manual: "Перевод",
+        invoice: "Счёт в чате",
+        invoiceHint: "Бот пришлёт счёт в чат. Если окно не закрылось — откройте приложение кнопкой «Приложение» в меню, не кнопкой App у поля ввода.",
+        none: "Активной подписки нет. Выберите тариф в магазине.",
+        catalog: "К каталогу",
+        fb: "Напишите одним сообщением — бот перешлёт его администратору.",
+        send: "Отправить",
+        sent: "Отправлено. Ответ придёт в чат с ботом.",
+        outside: "Это окно работает внутри Telegram. Откройте его кнопкой «Приложение» в боте.",
+      },
+      en: {
+        shop: "Plans",
+        lead: "Catalog and checkout. The chat menu stays.",
+        sub: "Your subscriptions",
+        chat: "Support",
+        tabShop: "Shop",
+        tabSub: "Plan",
+        tabChat: "Chat",
+        hit: "Top",
+        days: "days",
+        price: "Price",
+        duration: "Duration",
+        access: "Access after payment",
+        pay: "Pay",
+        back: "Back",
+        payWith: "Pay with",
+        stars: "Telegram Stars",
+        xrocket: "xRocket",
+        crypto: "CryptoBot",
+        manual: "Transfer",
+        invoice: "Invoice in chat",
+        invoiceHint: "The bot will send an invoice in the chat. If this window stays open, launch it from the App button in the menu, not the button next to the input.",
+        none: "No active plan. Pick one in the shop.",
+        catalog: "Open catalog",
+        fb: "Send one message — the bot forwards it to admin.",
+        send: "Send",
+        sent: "Sent. The reply will arrive in the bot chat.",
+        outside: "Open this page from the App button inside the bot.",
+      },
+    };
 
-    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ (АДМИН) -->
-    <div id="edit-modal" class="modal-overlay">
-        <div class="modal">
-            <h3 style="margin-bottom: 20px;">Редактировать</h3>
-            <input type="hidden" id="editOldId">
-            <div class="input-group"><input type="text" id="editNewId" placeholder="Новый Telegram ID"></div>
-            <div class="input-group"><input type="text" id="editName" placeholder="Новое имя"></div>
-            <div class="input-group"><input type="url" id="editLink" placeholder="Новая ссылка"></div>
-            <div class="input-group"><input type="url" id="editAvatar" placeholder="Ссылка на фото (необязательно)"></div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn btn-secondary" style="border: none;" onclick="closeEditModal()">Отмена</button>
-                <button id="btnSaveEdit" class="btn" onclick="saveEditMentor()">Сохранить</button>
-            </div>
-        </div>
-    </div>
+    let tw = window.Telegram && window.Telegram.WebApp;
+    function bindTelegram() {
+      tw = window.Telegram && window.Telegram.WebApp;
+      if (!tw) return;
+      try {
+        tw.ready();
+        tw.expand();
+        const userCode = tw.initDataUnsafe && tw.initDataUnsafe.user && tw.initDataUnsafe.user.language_code;
+        if (userCode) lang = userCode.toLowerCase().startsWith("en") ? "en" : "ru";
+      } catch (err) {
+        /* outside Telegram */
+      }
+      render();
+    }
+    const tgScript = document.createElement("script");
+    tgScript.src = "https://telegram.org/js/telegram-web-app.js";
+    tgScript.onload = bindTelegram;
+    document.head.appendChild(tgScript);
 
-    <!-- ПАНЕЛЬ УЧЕНИКА -->
-    <div id="user-view" style="display: none;">
-        <div class="sticky-header">
-            <h3>Наставники</h3>
-            <p class="subtitle">Выберите хелпера для начала работы.</p>
-            <div class="input-group" style="margin-bottom: 0;">
-                <input type="text" id="searchInput" placeholder="Поиск по имени..." oninput="filterUserList()">
-                <div id="clearSearchBtn" class="clear-btn" onclick="clearSearch()">✖</div>
-            </div>
-        </div>
-        
-        <div class="stats-row" style="margin-top: 12px;"><span>ДОСТУПНЫЕ</span><span id="userCount">0</span></div>
-        <div id="user-mentor-list" class="list-container"></div>
-    </div>
+    const code = (tw && tw.initDataUnsafe && tw.initDataUnsafe.user && tw.initDataUnsafe.user.language_code) || navigator.language || "ru";
+    let lang = code.toLowerCase().startsWith("en") ? "en" : "ru";
+    let tab = "shop";
+    let screen = { name: "list" };
+    let note = "";
+    let sent = false;
 
-    <!-- ПАНЕЛЬ ХЕЛПЕРА (НОВОЕ) -->
-    <div id="mentor-view" style="display: none;">
-        <div class="sticky-header">
-            <h3>Мои ученики</h3>
-            <p class="subtitle">Управление закрепленными за вами пользователями.</p>
-        </div>
-        
-        <div class="stats-row" style="margin-top: 12px;"><span>АКТИВНЫЕ УЧЕНИКИ</span><span id="mentorCount">0</span></div>
-        <div id="mentor-student-list" class="list-container"></div>
-    </div>
+    function tx(key) { return T[lang][key]; }
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand(); tg.ready();
+    function send(payload) {
+      if (!tw || typeof tw.sendData !== "function") return false;
+      try {
+        tw.sendData(JSON.stringify(payload));
+        tw.close();
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        let parsedData = [];
-        let userRole = urlParams.get('role') || 'student'; 
-        
-        try {
-            let dataParam = urlParams.get('data');
-            if (dataParam) parsedData = JSON.parse(decodeURIComponent(dataParam));
-        } catch(e) { console.error("Ошибка парсинга:", e); }
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, "\u0026amp;")
+        .replace(/</g, "\u003c")
+        .replace(/>/g, "\u003e")
+        .replace(/"/g, "\u0026quot;");
+    }
 
-        if (userRole === 'admin') {
-            document.getElementById('admin-view').style.display = 'block';
-            renderAdminList(parsedData);
-        } else if (userRole === 'mentor') {
-            document.getElementById('mentor-view').style.display = 'block';
-            document.getElementById('mentorCount').innerText = parsedData.length;
-            renderMentorList(parsedData);
-        } else {
-            document.getElementById('user-view').style.display = 'block';
-            document.getElementById('userCount').innerText = parsedData.length;
-            renderUserList(parsedData);
-        }
+    function render() {
+      const t = T[lang];
+      const product = PRODUCTS.find((p) => p.id === screen.id) || null;
+      let title = t.shop;
+      if (tab === "sub") title = t.sub;
+      else if (tab === "chat") title = t.chat;
+      else if (product && screen.name !== "list") title = product.title[lang];
 
-        // --- УТИЛИТЫ ---
-        function isValidUrl(string) { return /^(https?:\/\/|t\.me\/)/i.test(string.trim()); }
-        function setLoading(btnId, text) { let btn = document.getElementById(btnId); btn.innerText = text; btn.style.opacity = '0.7'; btn.style.pointerEvents = 'none'; }
-        function getAvatarColor(name) {
-            const colors = ['#e56555', '#f28c48', '#8e85ee', '#549cdd', '#4cb382', '#6dc534', '#e17076'];
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) { hash = name.charCodeAt(i) + ((hash << 5) - hash); }
-            return colors[Math.abs(hash) % colors.length];
-        }
-        function getInitial(name) { return name ? Array.from(name.replace('@', '').trim())[0].toUpperCase() : '?'; }
-        
-        function getAvatarHtml(name, avatarUrl) {
-            if (avatarUrl && isValidUrl(avatarUrl)) {
-                return `<img src="${avatarUrl}" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="avatar" style="display:none; background-color: ${getAvatarColor(name)}">${getInitial(name)}</div>`;
-            }
-            return `<div class="avatar" style="background-color: ${getAvatarColor(name)}">${getInitial(name)}</div>`;
-        }
+      let body = "";
+      if (tab === "shop") body = shop(product);
+      else if (tab === "sub") body = sub();
+      else body = chat();
 
-        // --- ЛОГИКА АДМИНА ---
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tabs-nav button').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.add('active');
-            document.getElementById('btn-' + tab).classList.add('active');
-            tg.HapticFeedback.selectionChanged();
-        }
+      document.getElementById("app").innerHTML =
+        '<header>' +
+          '<button class="lang" id="lang">' + (lang === "ru" ? "EN" : "RU") + "</button>" +
+          '<p class="kicker">Aura</p>' +
+          "<h1>" + esc(title) + "</h1>" +
+          (tab === "shop" && screen.name === "list" ? '<p class="lead">' + esc(t.lead) + "</p>" : "") +
+        "</header>" +
+        "<main>" + body + (!(tw && tw.initData) ? '<p class="muted">' + esc(t.outside) + "</p>" : "") + "</main>" +
+        "<nav>" +
+          tabBtn("shop", t.tabShop) +
+          tabBtn("sub", t.tabSub) +
+          tabBtn("chat", t.tabChat) +
+        "</nav>";
 
-        function renderAdminList(mentors) {
-            document.getElementById('adminCount').innerText = mentors.length;
-            let html = '';
-            if (mentors.length === 0) html = "<div style='text-align: center; color: gray; margin-top: 20px;'>Список пуст</div>";
-            
-            mentors.forEach(m => {
-                let avatarHtml = getAvatarHtml(m.name, m.avatar);
-                html += `
-                <div class="list-item">
-                    <div class="item-info">
-                        ${avatarHtml}
-                        <div class="item-text"><b>${m.name}</b><small>ID: ${m.id}</small></div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn btn-secondary btn-icon" onclick="openEditModal('${m.id}', '${m.name.replace(/'/g, "\\'")}', '${m.link}', '${m.avatar || ''}')">✏️</button>
-                        <button class="btn btn-danger btn-icon" onclick="deleteMentor('${m.id}')">🗑</button>
-                    </div>
-                </div>`;
-            });
-            document.getElementById('admin-mentor-list').innerHTML = html;
-        }
+      document.getElementById("lang").onclick = () => { lang = lang === "ru" ? "en" : "ru"; render(); };
+      document.querySelectorAll("[data-tab]").forEach((el) => {
+        el.onclick = () => { tab = el.getAttribute("data-tab"); if (screen.name === "done") screen = { name: "list" }; render(); };
+      });
+      document.querySelectorAll("[data-go]").forEach((el) => {
+        el.onclick = () => {
+          const go = el.getAttribute("data-go");
+          if (go === "list") screen = { name: "list" };
+          else if (go === "shop-tab") tab = "shop";
+          else if (go.startsWith("product:")) screen = { name: "product", id: Number(go.slice(8)) };
+          else if (go.startsWith("pay:")) screen = { name: "pay", id: Number(go.slice(4)) };
+          else if (go.startsWith("method:")) {
+            const method = go.slice(7);
+            const item = PRODUCTS.find((p) => p.id === screen.id);
+            if (item && send({ action: "pay", product_id: item.id, title: item.title[lang], method })) return;
+            screen = { name: "invoice", id: item ? item.id : screen.id, method };
+          }
+          render();
+        };
+      });
+      const area = document.getElementById("note");
+      if (area) {
+        area.value = note;
+        area.oninput = () => { note = area.value; };
+      }
+      const sendBtn = document.getElementById("send");
+      if (sendBtn) {
+        sendBtn.onclick = () => {
+          if (!note.trim()) return;
+          if (send({ action: "support", text: note.trim() })) return;
+          sent = true;
+          render();
+        };
+      }
+    }
 
-        function openEditModal(id, name, link, avatar) {
-            tg.HapticFeedback.impactOccurred('light');
-            document.getElementById('editOldId').value = id;
-            document.getElementById('editNewId').value = id;
-            document.getElementById('editName').value = name;
-            document.getElementById('editLink').value = link;
-            document.getElementById('editAvatar').value = avatar !== 'undefined' ? avatar : '';
-            document.getElementById('edit-modal').classList.add('active');
-        }
+    function tabBtn(id, label) {
+      return '<button type="button" data-tab="' + id + '"' + (tab === id ? ' aria-current="page"' : "") + ">" + esc(label) + "</button>";
+    }
 
-        function closeEditModal() { document.getElementById('edit-modal').classList.remove('active'); }
+    function shop(product) {
+      const t = T[lang];
+      if (screen.name === "invoice" && product) {
+        return '<button class="back" data-go="pay:' + product.id + '">' + esc(t.back) + "</button>" +
+          '<div class="card"><h2>' + esc(t.invoice) + "</h2><p>" + esc(product.title[lang]) + " · " + esc(product.price) + "</p><p>" + esc(t.invoiceHint) + "</p></div>";
+      }
+      if (screen.name === "pay" && product) {
+        return '<button class="back" data-go="product:' + product.id + '">' + esc(t.back) + "</button>" +
+          '<p class="muted">' + esc(t.payWith) + " · " + esc(product.price) + "</p>" +
+          method("stars", t.stars, "blue") +
+          method("xrocket", t.xrocket, "action") +
+          method("crypto", t.crypto, "ghost") +
+          method("manual", t.manual, "ghost");
+      }
+      if (screen.name === "product" && product) {
+        const channels = product.channels.map((c) => '<div class="card"><h2>' + esc(c) + "</h2></div>").join("");
+        return '<button class="back" data-go="list">' + esc(t.back) + "</button>" +
+          '<p class="muted">' + esc(product.desc[lang]) + "</p>" +
+          '<div class="card"><p>' + esc(t.price) + ": <b style=\"color:var(--text)\">" + esc(product.price) + "</b></p><p>" + esc(t.duration) + ": " + product.days + " " + esc(t.days) + "</p></div>" +
+          '<p class="kicker">' + esc(t.access) + "</p>" + channels +
+          '<button class="action" data-go="pay:' + product.id + '">' + esc(t.pay) + "</button>";
+      }
+      return PRODUCTS.map((p, i) =>
+        '<button class="card" data-go="product:' + p.id + '">' +
+          (i === 0 ? '<span class="badge">' + esc(t.hit) + "</span>" : "") +
+          "<h2>" + esc(p.title[lang]) + "</h2><p>" + esc(p.desc[lang]) + "</p>" +
+          '<p class="price">' + esc(p.price) + " · " + p.days + " " + esc(t.days) + "</p></button>"
+      ).join("");
+    }
 
-        function saveEditMentor() {
-            let oldId = document.getElementById('editOldId').value;
-            let newId = document.getElementById('editNewId').value.trim();
-            let name = document.getElementById('editName').value.trim();
-            let link = document.getElementById('editLink').value.trim();
-            let avatar = document.getElementById('editAvatar').value.trim();
+    function method(id, label, kind) {
+      const cls = kind === "blue" ? "action blue" : kind;
+      return '<button class="' + cls + '" data-go="method:' + id + '">' + esc(label) + "</button>";
+    }
 
-            if(!newId || !name || !link) return tg.showAlert("Заполните основные поля!");
-            if(!isValidUrl(link)) return tg.showAlert("Ссылка должна начинаться с https:// или t.me/");
+    function sub() {
+      const t = T[lang];
+      return '<p class="muted">' + esc(t.none) + '</p><button class="action blue" data-go="shop-tab">' + esc(t.catalog) + "</button>";
+    }
 
-            tg.HapticFeedback.notificationOccurred('success');
-            setLoading('btnSaveEdit', 'Сохраняем...');
-            tg.sendData(JSON.stringify({ action: "edit", id: oldId, new_id: newId, name: name, link: link, avatar: avatar }));
-        }
+    function chat() {
+      const t = T[lang];
+      if (sent) return '<p class="muted">' + esc(t.sent) + "</p>";
+      return '<p class="muted">' + esc(t.fb) + "</p>" +
+        '<textarea id="note" placeholder=""></textarea>' +
+        '<button class="action blue" id="send">' + esc(t.send) + "</button>";
+    }
 
-        function addMentor() {
-            let id = document.getElementById('mId').value.trim();
-            let name = document.getElementById('mName').value.trim();
-            let link = document.getElementById('mLink').value.trim();
-            let avatar = document.getElementById('mAvatar').value.trim();
-            
-            if(!id || !name || !link) return tg.showAlert("Пожалуйста, заполните все обязательные поля!");
-            if(!isValidUrl(link)) return tg.showAlert("Ссылка должна начинаться с https:// или t.me/");
-            
-            tg.HapticFeedback.notificationOccurred('success');
-            setLoading('btnAdd', 'Добавляем...');
-            tg.sendData(JSON.stringify({ action: "add", id: id, name: name, link: link, avatar: avatar }));
-        }
-
-        function deleteMentor(id) {
-            tg.HapticFeedback.impactOccurred('medium');
-            tg.showConfirm("Удалить Хелпера безвозвратно?", (confirm) => {
-                if(confirm) tg.sendData(JSON.stringify({ action: "delete", id: id }));
-            });
-        }
-
-        function sendAction(act) {
-            tg.HapticFeedback.impactOccurred('medium');
-            tg.sendData(JSON.stringify({ action: act }));
-        }
-
-        // --- ЛОГИКА УЧЕНИКА ---
-        function renderUserList(list) {
-            let html = '';
-            if (list.length === 0) html = "<div style='text-align: center; color: gray; margin-top: 30px;'>Ничего не найдено 😔</div>";
-            
-            list.forEach(m => {
-                let avatarHtml = getAvatarHtml(m.name, m.avatar);
-                html += `
-                <div class="list-item">
-                    <div class="item-info">
-                        ${avatarHtml}
-                        <div class="item-text"><b>${m.name}</b><small>Наставник Академии</small></div>
-                    </div>
-                    <button id="btnSelect_${m.id}" class="btn btn-small" onclick="selectMentor('${m.id}')">Выбрать</button>
-                </div>`;
-            });
-            document.getElementById('user-mentor-list').innerHTML = html;
-        }
-
-        function filterUserList() {
-            let query = document.getElementById('searchInput').value.toLowerCase();
-            let btnClear = document.getElementById('clearSearchBtn');
-            if (query.length > 0) { btnClear.classList.add('visible'); } else { btnClear.classList.remove('visible'); }
-            let filtered = parsedData.filter(m => m.name.toLowerCase().includes(query));
-            document.getElementById('userCount').innerText = filtered.length;
-            renderUserList(filtered);
-        }
-
-        function clearSearch() { document.getElementById('searchInput').value = ''; filterUserList(); document.getElementById('searchInput').focus(); }
-
-        function selectMentor(id) {
-            tg.HapticFeedback.impactOccurred('heavy');
-            setLoading(`btnSelect_${id}`, '⏳');
-            tg.sendData(JSON.stringify({ action: "select", id: id }));
-        }
-
-        // --- ЛОГИКА ХЕЛПЕРА (НОВОЕ) ---
-        function renderMentorList(studentsList) {
-            let html = '';
-            if (studentsList.length === 0) {
-                html = "<div style='text-align: center; color: gray; margin-top: 30px;'>У вас пока нет активных учеников 😔</div>";
-            }
-            
-            studentsList.forEach(s => {
-                let avatarHtml = getAvatarHtml(s.username, ""); // У учеников нет кастомных аватарок, генерируем кружок
-                html += `
-                <div class="list-item">
-                    <div class="item-info">
-                        ${avatarHtml}
-                        <div class="item-text"><b>${s.username}</b><small>ID: ${s.id}</small></div>
-                    </div>
-                    <button class="btn btn-danger btn-small" onclick="mentorUnpinStudent('${s.id}')">Открепить</button>
-                </div>`;
-            });
-            document.getElementById('mentor-student-list').innerHTML = html;
-        }
-
-        function mentorUnpinStudent(studentId) {
-            tg.HapticFeedback.impactOccurred('medium');
-            tg.showConfirm("Запросить у администратора открепление этого ученика?", (confirm) => {
-                if(confirm) {
-                    tg.sendData(JSON.stringify({ action: "mentor_unpin", student_id: studentId }));
-                }
-            });
-        }
-    </script>
+    render();
+  </script>
 </body>
 </html>
