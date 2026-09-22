@@ -142,37 +142,37 @@
   <div id="app"></div>
   <script>
     /*
-      Единственный файл Mini App. Залейте его на HTTPS и в .env бота:
+      Единственный файл Mini App. Каталог бот передаёт сам, в ссылке кнопки «Приложение».
+      Демо-тарифов здесь нет. Залейте файл на HTTPS:
       WEBAPP_URL=https://ваш-домен/webapp/index.html
-      Перезапустите бота и нажмите /start — появится кнопка «Приложение».
-
-      id тарифа — число из админки бота. title должен совпадать с названием товара,
-      если id не совпадёт: бот ищет тариф по названию.
+      Перезапустите бота и нажмите /start.
     */
-    const PRODUCTS = [
-      {
-        id: 1,
-        title: { ru: "Базовый", en: "Starter" },
-        desc: {
-          ru: "Доступ ко всем закрытым каналам на 30 дней. Ссылки с защитой от пересылки.",
-          en: "Access to all private channels for 30 days. Forward-protected invite links.",
-        },
-        price: "9.99 USD",
-        days: 30,
-        channels: ["VIP Club", "Signals"],
-      },
-      {
-        id: 2,
-        title: { ru: "Про", en: "Pro" },
-        desc: {
-          ru: "Всё из Базового + приоритетная поддержка и закрытый чат.",
-          en: "Everything in Starter plus priority support and a private chat.",
-        },
-        price: "24.90 USD",
-        days: 90,
-        channels: ["VIP Club", "Signals", "Pro Chat"],
-      },
-    ];
+    let CATALOG = { categories: [], products: [] };
+
+    function decodeCatalogToken(token) {
+      try {
+        let b64 = String(token).replace(/-/g, "+").replace(/_/g, "/");
+        while (b64.length % 4) b64 += "=";
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const data = JSON.parse(new TextDecoder().decode(bytes));
+        if (!data || !Array.isArray(data.products)) return null;
+        return data;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function catalogFromLocation() {
+      const hash = location.hash || "";
+      const idx = hash.indexOf("d=");
+      if (idx === -1) return null;
+      return decodeCatalogToken(decodeURIComponent(hash.slice(idx + 2).split("&")[0]));
+    }
+
+    const initialCatalog = catalogFromLocation();
+    if (initialCatalog) CATALOG = initialCatalog;
 
     const T = {
       ru: {
@@ -202,7 +202,10 @@
         fb: "Напишите одним сообщением — бот перешлёт его администратору.",
         send: "Отправить",
         sent: "Отправлено. Ответ придёт в чат с ботом.",
-        outside: "Это окно работает внутри Telegram. Откройте его кнопкой «Приложение» в боте.",
+        empty: "В боте пока нет тарифов. Добавьте их в админке и снова нажмите /start.",
+        openSub: "Открыть в чате",
+        subLead: "Список подписок бот пришлёт в чат.",
+        outside: "Откройте это окно кнопкой «Приложение» в боте.",
       },
       en: {
         shop: "Plans",
@@ -231,6 +234,9 @@
         fb: "Send one message — the bot forwards it to admin.",
         send: "Send",
         sent: "Sent. The reply will arrive in the bot chat.",
+        empty: "No plans in the bot yet. Add them in admin and tap /start again.",
+        openSub: "Open in chat",
+        subLead: "The bot will send your subscriptions in the chat.",
         outside: "Open this page from the App button inside the bot.",
       },
     };
@@ -284,11 +290,14 @@
 
     function render() {
       const t = T[lang];
-      const product = PRODUCTS.find((p) => p.id === screen.id) || null;
+      const product = CATALOG.products.find((p) => p.id === screen.id) || null;
       let title = t.shop;
       if (tab === "sub") title = t.sub;
       else if (tab === "chat") title = t.chat;
-      else if (product && screen.name !== "list") title = product.title[lang];
+      else if (screen.name === "cat") {
+        const cat = CATALOG.categories.find((c) => c.id === screen.id);
+        title = cat ? cat.title : t.shop;
+      } else if (product && screen.name !== "list") title = product.title;
 
       let body = "";
       if (tab === "shop") body = shop(product);
@@ -318,13 +327,13 @@
           const go = el.getAttribute("data-go");
           if (go === "list") screen = { name: "list" };
           else if (go === "shop-tab") tab = "shop";
+          else if (go === "mysub") { send({ action: "mysub" }); return; }
+          else if (go.startsWith("cat:")) screen = { name: "cat", id: Number(go.slice(4)) };
           else if (go.startsWith("product:")) screen = { name: "product", id: Number(go.slice(8)) };
-          else if (go.startsWith("pay:")) screen = { name: "pay", id: Number(go.slice(4)) };
-          else if (go.startsWith("method:")) {
-            const method = go.slice(7);
-            const item = PRODUCTS.find((p) => p.id === screen.id);
-            if (item && send({ action: "pay", product_id: item.id, title: item.title[lang], method })) return;
-            screen = { name: "invoice", id: item ? item.id : screen.id, method };
+          else if (go.startsWith("pay:")) {
+            const item = CATALOG.products.find((p) => p.id === Number(go.slice(4)));
+            if (item && send({ action: "pay", product_id: item.id, title: item.title })) return;
+            screen = { name: "invoice", id: item ? item.id : screen.id };
           }
           render();
         };
@@ -351,42 +360,46 @@
 
     function shop(product) {
       const t = T[lang];
-      if (screen.name === "invoice" && product) {
-        return '<button class="back" data-go="pay:' + product.id + '">' + esc(t.back) + "</button>" +
-          '<div class="card"><h2>' + esc(t.invoice) + "</h2><p>" + esc(product.title[lang]) + " · " + esc(product.price) + "</p><p>" + esc(t.invoiceHint) + "</p></div>";
+      if (!CATALOG.products.length && screen.name === "list") {
+        return '<p class="muted">' + esc(t.empty) + "</p>";
       }
-      if (screen.name === "pay" && product) {
+      if (screen.name === "invoice" && product) {
         return '<button class="back" data-go="product:' + product.id + '">' + esc(t.back) + "</button>" +
-          '<p class="muted">' + esc(t.payWith) + " · " + esc(product.price) + "</p>" +
-          method("stars", t.stars, "blue") +
-          method("xrocket", t.xrocket, "action") +
-          method("crypto", t.crypto, "ghost") +
-          method("manual", t.manual, "ghost");
+          '<div class="card"><h2>' + esc(t.invoice) + "</h2><p>" + esc(product.title) + " · " + esc(product.price) + "</p><p>" + esc(t.invoiceHint) + "</p></div>";
       }
       if (screen.name === "product" && product) {
-        const channels = product.channels.map((c) => '<div class="card"><h2>' + esc(c) + "</h2></div>").join("");
-        return '<button class="back" data-go="list">' + esc(t.back) + "</button>" +
-          '<p class="muted">' + esc(product.desc[lang]) + "</p>" +
+        const back = CATALOG.categories.length > 1 ? "cat:" + product.category_id : "list";
+        const channels = (product.channels || []).map((c) => '<div class="card"><h2>' + esc(c) + "</h2></div>").join("");
+        return '<button class="back" data-go="' + back + '">' + esc(t.back) + "</button>" +
+          (product.description ? '<p class="muted">' + esc(product.description) + "</p>" : "") +
           '<div class="card"><p>' + esc(t.price) + ": <b style=\"color:var(--text)\">" + esc(product.price) + "</b></p><p>" + esc(t.duration) + ": " + product.days + " " + esc(t.days) + "</p></div>" +
-          '<p class="kicker">' + esc(t.access) + "</p>" + channels +
+          (channels ? '<p class="kicker">' + esc(t.access) + "</p>" + channels : "") +
           '<button class="action" data-go="pay:' + product.id + '">' + esc(t.pay) + "</button>";
       }
-      return PRODUCTS.map((p, i) =>
+      if (screen.name === "list" && CATALOG.categories.length > 1) {
+        return CATALOG.categories.map((c) =>
+          '<button class="card" data-go="cat:' + c.id + '"><h2>' + esc(c.title) + "</h2>" +
+          (c.description ? "<p>" + esc(c.description) + "</p>" : "") + "</button>"
+        ).join("");
+      }
+      const list = screen.name === "cat"
+        ? CATALOG.products.filter((p) => p.category_id === screen.id)
+        : CATALOG.products;
+      const back = screen.name === "cat" && CATALOG.categories.length > 1
+        ? '<button class="back" data-go="list">' + esc(t.back) + "</button>"
+        : "";
+      if (!list.length) return back + '<p class="muted">' + esc(t.empty) + "</p>";
+      return back + list.map((p) =>
         '<button class="card" data-go="product:' + p.id + '">' +
-          (i === 0 ? '<span class="badge">' + esc(t.hit) + "</span>" : "") +
-          "<h2>" + esc(p.title[lang]) + "</h2><p>" + esc(p.desc[lang]) + "</p>" +
+          "<h2>" + esc(p.title) + "</h2>" +
+          (p.description ? "<p>" + esc(p.description) + "</p>" : "") +
           '<p class="price">' + esc(p.price) + " · " + p.days + " " + esc(t.days) + "</p></button>"
       ).join("");
     }
 
-    function method(id, label, kind) {
-      const cls = kind === "blue" ? "action blue" : kind;
-      return '<button class="' + cls + '" data-go="method:' + id + '">' + esc(label) + "</button>";
-    }
-
     function sub() {
       const t = T[lang];
-      return '<p class="muted">' + esc(t.none) + '</p><button class="action blue" data-go="shop-tab">' + esc(t.catalog) + "</button>";
+      return '<p class="muted">' + esc(t.subLead) + '</p><button class="action blue" data-go="mysub">' + esc(t.openSub) + "</button>";
     }
 
     function chat() {
